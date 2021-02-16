@@ -19,13 +19,13 @@ def main():
     # edit
     start_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
     with open(file_path, 'a') as f:
-        f.write(f'<!--started:{start_time}--!>\n')
+        f.write(f'> <!--started:{start_time}--!>\n')
 
     subprocess.run(['vim', file_path])
 
     finish_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
     with open(file_path, 'a') as f:
-        f.write(f'<!--stopped:{finish_time}--!>\n')
+        f.write(f'> <!--stopped:{finish_time}--!>\n')
 
 
 if __name__ == '__main__':
