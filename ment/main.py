@@ -11,9 +11,9 @@ def get_args():
     """get_args.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action='store_true')
-    parser.add_argument('-l', '--list', action='store_true')
-    parser.add_argument('--synthe')
+    parser.add_argument('-d', '--debug', action='store_true', help='stop logging time ')
+    parser.add_argument('-l', '--list', action='store_true', help='list names of tag')
+    parser.add_argument('--synthe', help='synthesize from daily.md files by tag')
     args = parser.parse_args()
     return args
 
