@@ -16,6 +16,34 @@ def get_args():
     return args
 
 
+def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
+    pattern = r'^# .*\n$'
+    compiled_ptn = re.compile(pattern)
+    tags = []
+    contents_lines = []
+    is_in_content_of_the_tag = False
+    with mkd_path.open('r') as f:
+        line = f.readline()
+        while line:
+            # 正規表現で見出し抽出
+            if compiled_ptn.match(line):
+                tag = line.split(' ')[1].rstrip()
+                tags.append(tag)
+                if tag == query_tag and not is_in_content_of_the_tag:
+                    is_in_content_of_the_tag = True
+                elif tag != query_tag and is_in_content_of_the_tag:
+                    is_in_content_of_the_tag = False
+            if is_in_content_of_the_tag:
+                # write
+                contents_lines.append(line)
+            else:
+                # dont write
+                pass
+
+            line = f.readline()
+    return contents_lines
+
+
 def synthesize_by_tag(tag, src_dir, dst_dir):
     """synthesize_by_tag.
     タグに応じた文書を吸い上げて生成する
