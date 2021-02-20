@@ -12,9 +12,40 @@ def get_args():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true')
+    parser.add_argument('-l', '--list', action='store_true')
     parser.add_argument('--synthe')
     args = parser.parse_args()
     return args
+
+
+def _extract_tags(mkd_path) -> List[str]:
+    pattern = r'^# .*\n$'
+    compiled_ptn = re.compile(pattern)
+    tags = []
+    with mkd_path.open('r') as f:
+        line = f.readline()
+        while line:
+            # 正規表現で見出し抽出
+            if compiled_ptn.match(line):
+                tag = line.split(' ')[1].rstrip()
+                tags.append(tag)
+            line = f.readline()
+    return tags
+
+
+def list_tags(src_dir):
+    '''
+    日付ごとにタグを列挙
+    '''
+    src_mkd_dir = Path(src_dir)
+    mkd_dir_paths = [mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
+    # 時系列順に眺めていきたい
+    mkd_dir_paths.sort()
+    for src_mkd_dir in mkd_dir_paths:
+        diary_path = src_mkd_dir / 'diary.md'
+        if diary_path.exists():
+            tags = _extract_tags(diary_path)
+            print(src_mkd_dir, tags)
 
 
 def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
@@ -65,7 +96,8 @@ def synthesize_by_tag(tag, src_dir, dst_dir):
             if diary_path.exists():
                 clines = extract_content_for_tag_from_mkd(diary_path, tag)
                 f.writelines(clines)
-                f.write('\n')
+                if clines != []:
+                    f.write('\n')
     return 'a'
 
 
@@ -88,6 +120,10 @@ def main():
         print(args.synthe)
         print("synthe END")
         exit()
+    elif args.list:
+        extract_tags(BASE_DIR)
+        exit()
+        # show_tags()
 
     YYYY_MM_DD = str(datetime.date.today())
 
