@@ -121,7 +121,7 @@ def main():
         print("synthe END")
         exit()
     elif args.list:
-        extract_tags(BASE_DIR)
+        list_tags(BASE_DIR)
         exit()
         # show_tags()
 
