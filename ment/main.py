@@ -27,7 +27,7 @@ def _extract_tags(mkd_path) -> List[str]:
         while line:
             # 正規表現で見出し抽出
             if compiled_ptn.match(line):
-                tag = line.split(' ')[1].rstrip()
+                tag = ''.join(line.split(' ')[1:]).rstrip()
                 tags.append(tag)
             line = f.readline()
     return tags
