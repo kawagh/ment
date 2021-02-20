@@ -1,3 +1,4 @@
+import subprocess
 from pathlib import Path
 
 from ment import __version__
@@ -9,13 +10,14 @@ def test_version():
 
 
 def test_extract_content_for_tag_from_mkd():
-    mkd_path = Path('tests') / 'sample_mkd' / 's1' / 'diary.md'
-    t1_lines = ['# tag1\n', '- this is tag1 in s1\n', '\n', '# tag1\n', '- this is tag1 in s1 again\n']
-    t2_lines = ['# tag2\n', '- this is tag2 in s1\n', '\n']
+    mkd_path = Path('tests') / 'sample_mkd' / '20200219' / 'diary.md'
+    t1_lines = ['# tag1\n', '- this is tag1 in 20200219\n', '\n', '# tag1\n', '- this is tag1 in 20200219 again\n']
+    t2_lines = ['# tag2\n', '- this is tag2 in 20200219\n', '\n']
     assert t1_lines == extract_content_for_tag_from_mkd(mkd_path, 'tag1')
     assert t2_lines == extract_content_for_tag_from_mkd(mkd_path, 'tag2')
 
 
 def test_synthesize_by_tag():
-    # synthesize_by_tag('tag1', './sample_mkd/', './sample_mkd/')
-    assert 1 == 1
+    synthesize_by_tag('tag1', 'tests/sample_mkd/', 'tests/sample_mkd/synthe/')
+    ret_code = subprocess.run(['diff', '-s', 'tests/sample_mkd/synthe/synthe_tag1.md', 'tests/sample_mkd/target_synthe/synthe_tag1.md']).returncode
+    assert ret_code == 0

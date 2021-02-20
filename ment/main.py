@@ -3,6 +3,7 @@ import datetime
 import os
 import re
 import subprocess
+from pathlib import Path
 from typing import List
 
 
@@ -53,22 +54,19 @@ def synthesize_by_tag(tag, src_dir, dst_dir):
         src_dir:統合されるマークダウンを格納したディレクトリ群の親ディレクトリ
         dst_dir:生成するマークダウンの場所
     """
-    dst_mkd_file = os.path.join(dst_dir, tag + '.md')
-    with open(dst_mkd_file, 'a') as f:
-        f.write(f'# {tag}\n')
-        # TODO
-        # タグに関わる文書を生成していく
-        days = os.listdir(src_dir)
-        print(days)
-        days.sort()
-        print(days)
-        for day in days:
-            print(day)
-            if day == 'synthe':
-                continue
-            src_mkd_file = os.path.join(src_dir, day, 'diary.md')
-            # TODO 見出しを段落でスプリットして行番号ごとにcat
-            subprocess.run(['cat', src_mkd_file])
+    src_mkd_dir = Path(src_dir)
+    mkd_dir_paths = [mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
+    # 時系列順に眺めていきたい
+    mkd_dir_paths.sort()
+    p = Path(dst_dir)
+    with open(p / f'synthe_{tag}.md', 'w') as f:
+        for src_mkd_dir in mkd_dir_paths:
+            diary_path = Path(src_mkd_dir) / 'diary.md'
+            if diary_path.exists():
+                clines = extract_content_for_tag_from_mkd(diary_path, tag)
+                f.writelines(clines)
+                f.write('\n')
+    return 'a'
 
 
 def main():
