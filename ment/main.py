@@ -16,10 +16,6 @@ def get_args():
     return args
 
 
-def _tag_parse():
-    pass
-
-
 def synthesize_by_tag(tag, src_dir, dst_dir):
     """synthesize_by_tag.
     タグに応じた文書を吸い上げて生成する
