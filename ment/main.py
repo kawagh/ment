@@ -11,9 +11,12 @@ def get_args():
     """get_args.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action='store_true', help='stop logging time ')
-    parser.add_argument('-l', '--list', action='store_true', help='list names of tag')
-    parser.add_argument('--synthe', help='synthesize from daily.md files by tag')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='stop logging time ')
+    parser.add_argument('-l', '--list', action='store_true',
+                        help='list names of tag')
+    parser.add_argument(
+        '--synthe', help='synthesize from daily.md files by tag')
     args = parser.parse_args()
     return args
 
@@ -38,7 +41,8 @@ def list_tags(src_dir):
     日付ごとにタグを列挙
     '''
     src_mkd_dir = Path(src_dir)
-    mkd_dir_paths = [mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
+    mkd_dir_paths = [
+        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
     for src_mkd_dir in mkd_dir_paths:
@@ -86,7 +90,8 @@ def synthesize_by_tag(tag, src_dir, dst_dir):
         dst_dir:生成するマークダウンの場所
     """
     src_mkd_dir = Path(src_dir)
-    mkd_dir_paths = [mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
+    mkd_dir_paths = [
+        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
     p = Path(dst_dir)
