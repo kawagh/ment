@@ -15,6 +15,8 @@ def get_args():
                         help='stop logging time ')
     parser.add_argument('-l', '--list', action='store_true',
                         help='list names of tag')
+    parser.add_argument('-w', '--week', action='store_true',
+                        help='output notes of recent 7 days')
     parser.add_argument(
         '--synthe', help='synthesize from daily.md files by tag')
     args = parser.parse_args()
@@ -80,6 +82,21 @@ def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
     return contents_lines
 
 
+def combine_recent_docs_to_one(base_dir, day_num=7):
+    '''
+    週報作成
+    '''
+    with open(Path(base_dir) / 'synthe/weeks.md', 'w') as f:
+        for delta_day in range(day_num - 1, -1, -1):
+            diary_path = Path(base_dir) / str(datetime.date.today() -
+                                              datetime.timedelta(delta_day)) / 'diary.md'
+            if diary_path.exists():
+                with open(diary_path, 'r') as f2:
+                    mkd_content = f2.read()
+                    f.write(mkd_content)
+                print(diary_path)
+
+
 def synthesize_by_tag(tag, src_dir, dst_dir):
     """synthesize_by_tag.
     タグに応じた文書を吸い上げて生成する
@@ -115,6 +132,7 @@ def main():
     if not os.path.exists(BASE_DIR):
         os.mkdir(BASE_DIR)
         print(f'{BASE_DIR=}')
+    # if args.
 
     if args.synthe is not None:
         tag = args.synthe
@@ -128,6 +146,8 @@ def main():
     elif args.list:
         list_tags(BASE_DIR)
         exit()
+    elif args.week:
+        combine_recent_docs_to_one(BASE_DIR)
         # show_tags()
 
     YYYY_MM_DD = str(datetime.date.today())
