@@ -158,17 +158,17 @@ def main():
     os.makedirs(os.path.join(BASE_DIR, YYYY_MM_DD), exist_ok=True)
     file_path = os.path.join(BASE_DIR, YYYY_MM_DD, file_name)
     # edit
-    if not args.debug:
-        start_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
-        with open(file_path, 'a') as f:
-            f.write(f'> <!--started:{start_time}--!>\n')
+    # if not args.debug:
+    #     start_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
+    #     with open(file_path, 'a') as f:
+    #         f.write(f'> <!--started:{start_time}--!>\n')
 
     subprocess.run(['vim', file_path])
 
-    if not args.debug:
-        finish_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
-        with open(file_path, 'a') as f:
-            f.write(f'> <!--stopped:{finish_time}--!>\n')
+    # if not args.debug:
+    #     finish_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
+    #     with open(file_path, 'a') as f:
+    #         f.write(f'> <!--stopped:{finish_time}--!>\n')
 
 
 if __name__ == '__main__':
