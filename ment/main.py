@@ -3,6 +3,7 @@ import datetime
 import os
 import re
 import subprocess
+from collections import Counter
 from pathlib import Path
 from typing import List
 
@@ -46,12 +47,15 @@ def list_tags(src_dir):
     mkd_dir_paths = [
         mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
     # 時系列順に眺めていきたい
+    tag_cnt = Counter()
     mkd_dir_paths.sort()
     for src_mkd_dir in mkd_dir_paths:
         diary_path = src_mkd_dir / 'diary.md'
         if diary_path.exists():
             tags = _extract_tags(diary_path)
-            print(src_mkd_dir, tags)
+            print(f"\033[32m{src_mkd_dir}\33[0m", tags)
+            tag_cnt += Counter(tags)
+    print(tag_cnt)
 
 
 def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
