@@ -4,14 +4,28 @@ ment is a python library to write daily log in markdown quickly and to synthesiz
 
 ## prerequisities
 - vim
-
-## how to install and run ment
+## installation
 ```
 pip install ment
-m # start editting ~/ment_dir/<todays_date>/diary.md
 ```
+## usage
+#### start editting
+```
+m
+```
+Then, starts to edit `~/ment_dir/<todays_date>/diary.md`
 
-## structure
+#### synthesize by tag
+```
+m --synthe <tag_name>
+```
+Then, it extracts contents followed by "# <tag_name>" from daily logs,
+and outputs `~/ment_dir/synthe/<tag_name>/synthe_<tag_name>.md`.
+
+If you want to list tags,`m -l`
+
+
+## directory structure
 ```
 ~/ment_dir/
 ├── 2021-03-27
