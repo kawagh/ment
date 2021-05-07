@@ -17,12 +17,12 @@ Then, starts to edit `~/ment_dir/<todays_date>/diary.md`
 
 #### synthesize by tag
 ```
-m --synthe <tag_name>
+m synthe <tag_name>
 ```
 Then, it extracts contents followed by "# <tag_name>" from daily logs,
 and outputs `~/ment_dir/synthe/<tag_name>/synthe_<tag_name>.md`.
 
-If you want to list tags,`m -l`
+If you want to list tags,`m list`
 
 
 ## directory structure
