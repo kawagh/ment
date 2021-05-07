@@ -9,48 +9,81 @@ from typing import List
 
 
 def get_args():
-    """get_args.
-    """
+    """get_args."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action='store_true',
-                        help='stop logging time ')
-    parser.add_argument('-l', '--list', action='store_true',
-                        help='list names of tag')
-    parser.add_argument('-w', '--week', action='store_true',
-                        help='output notes of recent 7 days')
-    parser.add_argument(
-        '--synthe', help='synthesize from daily.md files by tag')
+    subparsers = parser.add_subparsers()
+
+    parser_list = subparsers.add_parser("list", help="list names of tags")
+    parser_list.set_defaults(handler=command_list)
+
+    parser_synthe = subparsers.add_parser(
+        "synthe", help="synthesize from daily.md files by tag"
+    )
+    parser_synthe.add_argument(
+        "tag",
+        type=str,
+        help="synthesize from daily.md files by tag",
+    )
+    parser_synthe.set_defaults(handler=command_synthe)
+
+    parser_week = subparsers.add_parser(
+        "week", help="output notes of recent 7 days")
+    parser_week.set_defaults(handler=command_week)
+
     args = parser.parse_args()
     return args
 
 
+def command_list(args):
+    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
+    list_tags(BASE_DIR)
+
+
+def command_synthe(args):
+    print(args.tag)
+    tag = args.tag
+    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
+    os.makedirs(os.path.join(BASE_DIR, "synthe", tag), exist_ok=True)
+    dst_dir = os.path.join(BASE_DIR, "synthe", tag)
+    # tag search
+    synthesize_by_tag(tag, BASE_DIR, dst_dir)
+    print("synthe END")
+    exit()
+
+
+def command_week(args):
+    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
+    combine_recent_docs_to_one(BASE_DIR)
+
+
 def _extract_tags(mkd_path) -> List[str]:
-    pattern = r'^# .*\n$'
+    pattern = r"^# .*\n$"
     compiled_ptn = re.compile(pattern)
     tags = []
-    with mkd_path.open('r') as f:
+    with mkd_path.open("r") as f:
         line = f.readline()
         while line:
             # 正規表現で見出し抽出
             if compiled_ptn.match(line):
-                tag = ''.join(line.split(' ')[1:]).rstrip()
+                tag = "".join(line.split(" ")[1:]).rstrip()
                 tags.append(tag)
             line = f.readline()
     return tags
 
 
 def list_tags(src_dir):
-    '''
+    """
     日付ごとにタグを列挙
-    '''
+    """
     src_mkd_dir = Path(src_dir)
     mkd_dir_paths = [
-        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
+        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != "synthe"
+    ]
     # 時系列順に眺めていきたい
     tag_cnt = Counter()
     mkd_dir_paths.sort()
     for src_mkd_dir in mkd_dir_paths:
-        diary_path = src_mkd_dir / 'diary.md'
+        diary_path = src_mkd_dir / "diary.md"
         if diary_path.exists():
             tags = _extract_tags(diary_path)
             print(f"\033[32m{src_mkd_dir}\33[0m", tags)
@@ -59,16 +92,16 @@ def list_tags(src_dir):
 
 
 def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
-    pattern = r'^# .*\n$'
+    pattern = r"^# .*\n$"
     compiled_ptn = re.compile(pattern)
     contents_lines = []
     is_in_content_of_the_tag = False
-    with mkd_path.open('r') as f:
+    with mkd_path.open("r") as f:
         line = f.readline()
         while line:
             # 正規表現で見出し抽出
             if compiled_ptn.match(line):
-                tag = line.split(' ')[1].rstrip()
+                tag = line.split(" ")[1].rstrip()
                 if tag == query_tag and not is_in_content_of_the_tag:
                     is_in_content_of_the_tag = True
                 elif tag != query_tag and is_in_content_of_the_tag:
@@ -88,15 +121,18 @@ def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
 
 
 def combine_recent_docs_to_one(base_dir, day_num=7):
-    '''
+    """
     週報作成
-    '''
-    with open(Path(base_dir) / 'synthe/weeks.md', 'w') as f:
+    """
+    with open(Path(base_dir) / "synthe/weeks.md", "w") as f:
         for delta_day in range(day_num - 1, -1, -1):
-            diary_path = Path(base_dir) / str(datetime.date.today() -
-                                              datetime.timedelta(delta_day)) / 'diary.md'
+            diary_path = (
+                Path(base_dir)
+                / str(datetime.date.today() - datetime.timedelta(delta_day))
+                / "diary.md"
+            )
             if diary_path.exists():
-                with open(diary_path, 'r') as f2:
+                with open(diary_path, "r") as f2:
                     mkd_content = f2.read()
                     f.write(mkd_content)
                 print(diary_path)
@@ -113,53 +149,38 @@ def synthesize_by_tag(tag, src_dir, dst_dir):
     """
     src_mkd_dir = Path(src_dir)
     mkd_dir_paths = [
-        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != 'synthe']
+        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != "synthe"
+    ]
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
     p = Path(dst_dir)
-    with open(p / f'synthe_{tag}.md', 'w') as f:
+    with open(p / f"synthe_{tag}.md", "w") as f:
         for src_mkd_dir in mkd_dir_paths:
-            diary_path = Path(src_mkd_dir) / 'diary.md'
+            diary_path = Path(src_mkd_dir) / "diary.md"
             if diary_path.exists():
                 clines = extract_content_for_tag_from_mkd(diary_path, tag)
                 f.writelines(clines)
                 if clines != []:
-                    f.write('\n')
-    return 'a'
+                    f.write("\n")
+    return "a"
 
 
 def main():
-    """main.
-    """
+    """main."""
     args = get_args()
+    if hasattr(args, "handler"):
+        args.handler(args)
+        return
     print("This is ment")
-    BASE_DIR = os.path.join(os.path.expanduser('~/ment_dir'))
+    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
     if not os.path.exists(BASE_DIR):
         os.mkdir(BASE_DIR)
-        print(f'{BASE_DIR=}')
-    # if args.
-
-    if args.synthe is not None:
-        tag = args.synthe
-        os.makedirs(os.path.join(BASE_DIR, 'synthe', tag), exist_ok=True)
-        dst_dir = os.path.join(BASE_DIR, 'synthe', tag)
-        # tag search
-        synthesize_by_tag(tag, BASE_DIR, dst_dir)
-        print(args.synthe)
-        print("synthe END")
-        exit()
-    elif args.list:
-        list_tags(BASE_DIR)
-        exit()
-    elif args.week:
-        combine_recent_docs_to_one(BASE_DIR)
-        # show_tags()
+        print(f"{BASE_DIR=}")
 
     YYYY_MM_DD = str(datetime.date.today())
 
-    # title = input("Title:")
-    title = 'diary'
-    file_name = title + '.md'
+    title = "diary"
+    file_name = title + ".md"
     os.makedirs(os.path.join(BASE_DIR, YYYY_MM_DD), exist_ok=True)
     file_path = os.path.join(BASE_DIR, YYYY_MM_DD, file_name)
     # edit
@@ -168,7 +189,7 @@ def main():
     #     with open(file_path, 'a') as f:
     #         f.write(f'> <!--started:{start_time}--!>\n')
 
-    subprocess.run(['vim', file_path])
+    subprocess.run(["vim", file_path])
 
     # if not args.debug:
     #     finish_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
@@ -176,5 +197,5 @@ def main():
     #         f.write(f'> <!--stopped:{finish_time}--!>\n')
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
