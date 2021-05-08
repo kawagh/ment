@@ -7,6 +7,8 @@ from collections import Counter
 from pathlib import Path
 from typing import List
 
+BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
+
 
 def get_args():
     """get_args."""
@@ -30,19 +32,26 @@ def get_args():
         "week", help="output notes of recent 7 days")
     parser_week.set_defaults(handler=command_week)
 
+    parser_read = subparsers.add_parser(
+        "read", help="open tag-synthesized file for reading"
+    )
+    parser_read.add_argument(
+        "tag",
+        type=str,
+        help="open tag-synthesized file for reading",
+    )
+    parser_read.set_defaults(handler=command_read)
     args = parser.parse_args()
     return args
 
 
 def command_list(args):
-    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
     list_tags(BASE_DIR)
 
 
 def command_synthe(args):
     print(args.tag)
     tag = args.tag
-    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
     os.makedirs(os.path.join(BASE_DIR, "synthe", tag), exist_ok=True)
     dst_dir = os.path.join(BASE_DIR, "synthe", tag)
     # tag search
@@ -51,8 +60,18 @@ def command_synthe(args):
     exit()
 
 
+def command_read(args):
+    tag = args.tag
+    read_file_path = Path(BASE_DIR) / "synthe" / tag / f"synthe_{tag}.md"
+    if not read_file_path.exists():
+        raise FileNotFoundError(
+            f"Please run `m synthe {tag}` or `m week` before read command"
+        )
+    else:
+        subprocess.run(["vim", read_file_path])
+
+
 def command_week(args):
-    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
     combine_recent_docs_to_one(BASE_DIR)
 
 
@@ -124,7 +143,7 @@ def combine_recent_docs_to_one(base_dir, day_num=7):
     """
     週報作成
     """
-    with open(Path(base_dir) / "synthe/weeks.md", "w") as f:
+    with open(Path(base_dir) / "synthe/week/synthe_week.md", "w") as f:
         for delta_day in range(day_num - 1, -1, -1):
             diary_path = (
                 Path(base_dir)
@@ -172,7 +191,7 @@ def main():
         args.handler(args)
         return
     print("This is ment")
-    BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
+    os.makedirs(Path(BASE_DIR) / "synthe/week", exist_ok=True)
     if not os.path.exists(BASE_DIR):
         os.mkdir(BASE_DIR)
         print(f"{BASE_DIR=}")
