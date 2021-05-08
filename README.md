@@ -66,7 +66,7 @@ bash-completion file for `ment` is `bash_completion_for_ment`.
 
 
 ```
-cat bash_comletion_for_ment >>  ~/.bash_completion
+cat bash_completion_for_ment >>  ~/.bash_completion
 source ~/.bashrc
 ```
 
