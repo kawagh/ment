@@ -1,0 +1,18 @@
+#!/bin/bash
+# bash completion for ment
+# put contents of this file into .bash_completion
+_ment()
+{
+  local cur prev cword opts
+  _get_comp_words_by_ref -n : cur prev cword
+  opts="synthe week list read"
+  if [ "${cword}" -eq 1 ]; then
+    COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+  elif [ "${prev}" = "read" ]; then
+    COMPREPLY=( $(compgen -W "$(ls ~/ment_dir/synthe/)" -- "${cur}") )
+  elif [ "${prev}" = "synthe" ]; then
+    COMPREPLY=( $(compgen -W " $(ls ~/ment_dir/synthe/)" -- "${cur}") )
+  fi
+}
+complete -F _ment m
+
