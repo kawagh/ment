@@ -50,13 +50,11 @@ def command_list(args):
 
 
 def command_synthe(args):
-    print(args.tag)
     tag = args.tag
     os.makedirs(os.path.join(BASE_DIR, "synthe", tag), exist_ok=True)
     dst_dir = os.path.join(BASE_DIR, "synthe", tag)
     # tag search
     synthesize_by_tag(tag, BASE_DIR, dst_dir)
-    print("synthe END")
     exit()
 
 
@@ -150,7 +148,8 @@ def combine_recent_docs_to_one(base_dir, day_num=7):
     """
     週報作成
     """
-    with open(Path(base_dir) / "synthe/week/synthe_week.md", "w") as f:
+    output_file = Path(base_dir) / "synthe/week/synthe_week.md"
+    with open(output_file, "w") as f:
         for delta_day in range(day_num - 1, -1, -1):
             diary_path = (
                 Path(base_dir)
@@ -165,6 +164,13 @@ def combine_recent_docs_to_one(base_dir, day_num=7):
                 f.write(mkd_content)
                 f.write("\n")
                 print(diary_path)
+    print("Extracted.")
+    print()
+    print(f"output to  {output_file}")
+    print(
+        f"To access to the file, \
+`m read week`"
+    )
 
 
 def synthesize_by_tag(tag, src_dir, dst_dir):
@@ -183,16 +189,27 @@ def synthesize_by_tag(tag, src_dir, dst_dir):
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
     p = Path(dst_dir)
-    with open(p / f"synthe_{tag}.md", "w") as f:
+    output_file = p / f"synthe_{tag}.md"
+
+    print(f"Extracting tag `{tag}` from")
+    with open(output_file, "w") as f:
         for src_mkd_dir in mkd_dir_paths:
             diary_path = Path(src_mkd_dir) / "diary.md"
             if diary_path.exists():
                 header = make_header(diary_path)
                 clines = extract_content_for_tag_from_mkd(diary_path, tag)
                 if len(clines) != 0:
+                    print(diary_path)
                     f.writelines(header)
                     f.writelines(clines)
                     f.write("\n")
+    print("Extracted.")
+    print()
+    print(f"output to  {output_file}")
+    print(
+        f"To access to the file, \
+`m read {tag}`"
+    )
     return "a"
 
 
