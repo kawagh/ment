@@ -62,11 +62,11 @@ If you want to list tags,`m list`
 
 ### completion
 
-bash-completion file for `ment` is `bash_comletion_for_ment`.
+bash-completion file for `ment` is `bash_completion_for_ment`.
 
 
 ```
-cat bash_comletion_for_ment >>  ~/.bash_comletion
+cat bash_completion_for_ment >>  ~/.bash_completion
 source ~/.bashrc
 ```
 
