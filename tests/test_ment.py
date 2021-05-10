@@ -27,7 +27,9 @@ def test_synthesize_by_tag():
     """
     tagを指定して合成したファイルと所望のファイルの差分がないか調べる
     """
-    synthesize_by_tag("tag1", "tests/sample_mkd/", "tests/sample_mkd/synthe/")
+    synthesize_by_tag(
+        "tag1", Path("tests/sample_mkd/"), Path("tests/sample_mkd/synthe/")
+    )
     ret_code = subprocess.run(
         [
             "diff",

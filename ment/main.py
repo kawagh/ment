@@ -7,7 +7,7 @@ from collections import Counter
 from pathlib import Path
 from typing import List
 
-BASE_DIR = os.path.join(os.path.expanduser("~/ment_dir"))
+BASE_DIR = Path.home() / "ment_dir"
 
 
 def get_args():
@@ -51,8 +51,8 @@ def command_list(args):
 
 def command_synthe(args):
     tag = args.tag
-    os.makedirs(os.path.join(BASE_DIR, "synthe", tag), exist_ok=True)
-    dst_dir = os.path.join(BASE_DIR, "synthe", tag)
+    dst_dir: Path = BASE_DIR / "synthe" / tag
+    dst_dir.mkdir(parents=True, exist_ok=True)
     # tag search
     synthesize_by_tag(tag, BASE_DIR, dst_dir)
     exit()
@@ -144,15 +144,15 @@ def make_header(diary_path: Path) -> List[str]:
     return header
 
 
-def combine_recent_docs_to_one(base_dir, day_num=7):
+def combine_recent_docs_to_one(base_dir: Path, day_num=7):
     """
     週報作成
     """
-    output_file = Path(base_dir) / "synthe/week/synthe_week.md"
+    output_file = base_dir / "synthe/week/synthe_week.md"
     with open(output_file, "w") as f:
         for delta_day in range(day_num - 1, -1, -1):
             diary_path = (
-                Path(base_dir)
+                base_dir
                 / str(datetime.date.today() - datetime.timedelta(delta_day))
                 / "diary.md"
             )
@@ -168,12 +168,12 @@ def combine_recent_docs_to_one(base_dir, day_num=7):
     print()
     print(f"output to  {output_file}")
     print(
-        f"To access to the file, \
+        "To access to the file, \
 `m read week`"
     )
 
 
-def synthesize_by_tag(tag, src_dir, dst_dir):
+def synthesize_by_tag(tag: str, src_dir: Path, dst_dir: Path):
     """synthesize_by_tag.
     タグに応じた文書を吸い上げて生成する
 
@@ -182,9 +182,8 @@ def synthesize_by_tag(tag, src_dir, dst_dir):
         src_dir:統合されるマークダウンを格納したディレクトリ群の親ディレクトリ
         dst_dir:生成するマークダウンの場所
     """
-    src_mkd_dir = Path(src_dir)
     mkd_dir_paths = [
-        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != "synthe"
+        mkd_dir for mkd_dir in src_dir.iterdir() if mkd_dir.stem != "synthe"
     ]
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
@@ -218,19 +217,15 @@ def main():
     args = get_args()
     if hasattr(args, "handler"):
         args.handler(args)
-        return
     print("This is ment")
-    os.makedirs(Path(BASE_DIR) / "synthe/week", exist_ok=True)
-    if not os.path.exists(BASE_DIR):
-        os.mkdir(BASE_DIR)
-        print(f"{BASE_DIR=}")
+    Path(BASE_DIR / "synthe/week").mkdir(exist_ok=True, parents=True)
 
     YYYY_MM_DD = str(datetime.date.today())
 
     title = "diary"
     file_name = title + ".md"
-    os.makedirs(os.path.join(BASE_DIR, YYYY_MM_DD), exist_ok=True)
-    file_path = os.path.join(BASE_DIR, YYYY_MM_DD, file_name)
+    Path(BASE_DIR / YYYY_MM_DD).mkdir(exist_ok=True)
+    file_path = BASE_DIR / YYYY_MM_DD / file_name
 
     subprocess.run(["vim", file_path])
 
