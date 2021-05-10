@@ -139,6 +139,13 @@ def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
     return contents_lines
 
 
+def make_header(diary_path: Path) -> List[str]:
+    header = [
+        "# " + diary_path.parent.name + "\n\n",
+    ]  # 抽出元ファイル
+    return header
+
+
 def combine_recent_docs_to_one(base_dir, day_num=7):
     """
     週報作成
@@ -153,7 +160,10 @@ def combine_recent_docs_to_one(base_dir, day_num=7):
             if diary_path.exists():
                 with open(diary_path, "r") as f2:
                     mkd_content = f2.read()
-                    f.write(mkd_content)
+                header = make_header(diary_path)
+                f.writelines(header)
+                f.write(mkd_content)
+                f.write("\n")
                 print(diary_path)
 
 
@@ -177,9 +187,11 @@ def synthesize_by_tag(tag, src_dir, dst_dir):
         for src_mkd_dir in mkd_dir_paths:
             diary_path = Path(src_mkd_dir) / "diary.md"
             if diary_path.exists():
+                header = make_header(diary_path)
                 clines = extract_content_for_tag_from_mkd(diary_path, tag)
-                f.writelines(clines)
-                if clines != []:
+                if len(clines) != 0:
+                    f.writelines(header)
+                    f.writelines(clines)
                     f.write("\n")
     return "a"
 
@@ -202,18 +214,8 @@ def main():
     file_name = title + ".md"
     os.makedirs(os.path.join(BASE_DIR, YYYY_MM_DD), exist_ok=True)
     file_path = os.path.join(BASE_DIR, YYYY_MM_DD, file_name)
-    # edit
-    # if not args.debug:
-    #     start_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
-    #     with open(file_path, 'a') as f:
-    #         f.write(f'> <!--started:{start_time}--!>\n')
 
     subprocess.run(["vim", file_path])
-
-    # if not args.debug:
-    #     finish_time = str(datetime.datetime.now().strftime('%H:%M:%S'))
-    #     with open(file_path, 'a') as f:
-    #         f.write(f'> <!--stopped:{finish_time}--!>\n')
 
 
 if __name__ == "__main__":
