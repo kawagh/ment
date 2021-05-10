@@ -47,6 +47,7 @@ def get_args():
 
 def command_list(args):
     list_tags(BASE_DIR)
+    exit()
 
 
 def command_synthe(args):
@@ -71,6 +72,7 @@ def command_read(args):
 
 def command_week(args):
     combine_recent_docs_to_one(BASE_DIR)
+    exit()
 
 
 def _extract_tags(mkd_path) -> List[str]:
@@ -108,7 +110,7 @@ def list_tags(src_dir):
     print(tag_cnt)
 
 
-def extract_content_for_tag_from_mkd(mkd_path, query_tag: str) -> List[str]:
+def extract_content_for_tag_from_mkd(mkd_path: Path, query_tag: str) -> List[str]:
     pattern = r"^# .*\n$"
     compiled_ptn = re.compile(pattern)
     contents_lines = []
