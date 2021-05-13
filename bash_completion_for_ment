@@ -3,7 +3,7 @@
 # put contents of this file into .bash_completion
 
 if [ -z "$MENT_DIR" ]; then
-    $MENT_DIR="$HOME/ment_dir"
+    export MENT_DIR="$HOME/ment_dir"
 fi
 
 _ment()
