@@ -7,7 +7,15 @@ from collections import Counter
 from pathlib import Path
 from typing import List
 
-BASE_DIR = Path.home() / "ment_dir"
+# config
+if os.environ.get("MENT_DIR") is None:
+    BASE_DIR = Path.home() / "ment_dir"
+else:
+    BASE_DIR = Path(os.environ.get("MENT_DIR"))
+if os.environ.get("MENT_EDITOR") is None:
+    MENT_EDITOR = "vim"
+else:
+    MENT_EDITOR = os.environ.get("MENT_EDITOR")
 
 
 def get_args():
@@ -67,7 +75,7 @@ def command_read(args):
             f"Please run `m synthe {tag}` or `m week` before read command"
         )
     else:
-        subprocess.run(["vim", read_file_path])
+        subprocess.run([MENT_EDITOR, read_file_path])
 
 
 def command_week(args):
@@ -229,7 +237,7 @@ def main():
     Path(BASE_DIR / YYYY_MM_DD).mkdir(exist_ok=True)
     file_path = BASE_DIR / YYYY_MM_DD / file_name
 
-    subprocess.run(["vim", file_path])
+    subprocess.run([MENT_EDITOR, file_path])
 
 
 if __name__ == "__main__":

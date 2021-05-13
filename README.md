@@ -60,6 +60,16 @@ If you want to list tags,`m list`
 
 ```
 
+### configuration
+
+If you want to change editor and directory, please set environment variable.
+
+
+```
+export MENT_DIR="/path/to/documents"
+export MENT_EDITOR="youreditor"
+```
+
 ### completion
 
 bash-completion file for `ment` is `bash_completion_for_ment`.
