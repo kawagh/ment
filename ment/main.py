@@ -76,6 +76,7 @@ def command_read(args):
         )
     else:
         subprocess.run([MENT_EDITOR, read_file_path])
+        exit()
 
 
 def command_week(args):
