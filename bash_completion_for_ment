@@ -1,6 +1,11 @@
 #!/bin/bash
 # bash completion for ment
 # put contents of this file into .bash_completion
+
+if [ -z "$MENT_DIR" ]; then
+    $MENT_DIR="$HOME/ment_dir"
+fi
+
 _ment()
 {
   local cur prev cword opts
@@ -9,10 +14,9 @@ _ment()
   if [ "${cword}" -eq 1 ]; then
     COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
   elif [ "${prev}" = "read" ]; then
-    COMPREPLY=( $(compgen -W "$(ls ~/ment_dir/synthe/)" -- "${cur}") )
+    COMPREPLY=( $(compgen -W "$(ls $MENT_DIR/synthe/)" -- "${cur}") )
   elif [ "${prev}" = "synthe" ]; then
-    COMPREPLY=( $(compgen -W " $(ls ~/ment_dir/synthe/)" -- "${cur}") )
+      COMPREPLY=( $(compgen -W " $(ls $MENT_DIR/synthe/)" -- "${cur}") )
   fi
 }
 complete -F _ment m
-
