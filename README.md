@@ -12,7 +12,7 @@
 
 ## installation
 
-```
+```sh
 pip install ment
 ```
 
@@ -20,26 +20,46 @@ pip install ment
 
 ### start editting
 
-```
-m  # just type `m<Enter>`
+```sh
+m
 ```
 
-It means `vim ~/ment_dir/<todays_date>/diary.md`
+Type `m<Enter>`.
+
+Default,it means `vim ~/ment_dir/<todays_date>/diary.md`
+If you want to switch editor, look [configuration](#configuration)
+
 
 ### synthesize by tag
 
-```
+```sh
 m synthe <tag_name>
 ```
 
 Then, it extracts contents followed by "# <tag_name>" from daily logs,
 and outputs `~/ment_dir/synthe/<tag_name>/synthe_<tag_name>.md`.
 
-If you want to list tags,`m list`
+If you want to list tags,`m list`.
+
+To synthesize recent 7days document,`m week`.
+It outputs `~/ment_dir/synthe/week/synthe_week.md`.
+
+To read synthesized documents,`m read <tag_name>`.
+
+### configuration
+
+If you want to change editor and directory, please set environment variable.
+
+```sh
+export MENT_DIR="/path/to/documents" 
+export MENT_EDITOR="your editor"
+```
+
+Default,MENT_DIR is `~/ment_dir/`
 
 ### directory structure
 
-```
+```text
 ~/ment_dir/
 ├── 2021-03-27
 │   └── diary.md
@@ -60,22 +80,13 @@ If you want to list tags,`m list`
 
 ```
 
-### configuration
-
-If you want to change editor and directory, please set environment variable.
-
-
-```
-export MENT_DIR="/path/to/documents"
-export MENT_EDITOR="youreditor"
-```
 
 ### completion
 
 bash-completion file for `ment` is `bash_completion_for_ment`.
 
 
-```
+```sh
 cat bash_completion_for_ment >>  ~/.bash_completion
 source ~/.bashrc
 ```
