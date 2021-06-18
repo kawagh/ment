@@ -26,9 +26,7 @@ def get_args():
     parser_list = subparsers.add_parser("list", help="list names of tags")
     parser_list.set_defaults(handler=command_list)
 
-    parser_synthe = subparsers.add_parser(
-        "synthe", help="synthesize from daily.md files by tag"
-    )
+    parser_synthe = subparsers.add_parser("synthe", help="synthesize from daily.md files by tag")
     parser_synthe.add_argument(
         "tag",
         type=str,
@@ -36,25 +34,45 @@ def get_args():
     )
     parser_synthe.set_defaults(handler=command_synthe)
 
-    parser_week = subparsers.add_parser(
-        "week", help="output notes of recent 7 days")
+    parser_week = subparsers.add_parser("week", help="output notes of recent 7 days")
     parser_week.set_defaults(handler=command_week)
 
-    parser_read = subparsers.add_parser(
-        "read", help="open tag-synthesized file for reading"
-    )
+    parser_read = subparsers.add_parser("read", help="open tag-synthesized file for reading")
     parser_read.add_argument(
         "tag",
         type=str,
         help="open tag-synthesized file for reading",
     )
     parser_read.set_defaults(handler=command_read)
+
+    parser_list = subparsers.add_parser("update", help="update all synthesized documents")
+    parser_list.set_defaults(handler=command_update)
+
     args = parser.parse_args()
+
     return args
 
 
 def command_list(args):
     list_tags(BASE_DIR)
+    exit()
+
+
+def command_update(args):
+    """
+    合成ファイルの一括更新
+    ```
+    m week
+    m synthe {any tag}
+    ```
+    """
+    combine_recent_docs_to_one(BASE_DIR)
+    for dst_dir in (BASE_DIR / "synthe").iterdir():
+        tag = dst_dir.stem
+        # week,externalはtagとして扱えない
+        if tag == "week" or tag == "external":
+            continue
+        synthesize_by_tag(dst_dir.stem, BASE_DIR, dst_dir)
     exit()
 
 
@@ -71,9 +89,7 @@ def command_read(args):
     tag = args.tag
     read_file_path = Path(BASE_DIR) / "synthe" / tag / f"synthe_{tag}.md"
     if not read_file_path.exists():
-        raise FileNotFoundError(
-            f"Please run `m synthe {tag}` or `m week` before read command"
-        )
+        raise FileNotFoundError(f"Please run `m synthe {tag}` or `m week` before read command")
     else:
         subprocess.run([MENT_EDITOR, read_file_path])
         exit()
@@ -104,9 +120,7 @@ def list_tags(src_dir):
     日付ごとにタグを列挙
     """
     src_mkd_dir = Path(src_dir)
-    mkd_dir_paths = [
-        mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != "synthe"
-    ]
+    mkd_dir_paths = [mkd_dirs for mkd_dirs in src_mkd_dir.iterdir() if mkd_dirs.stem != "synthe"]
     # 時系列順に眺めていきたい
     tag_cnt = Counter()
     mkd_dir_paths.sort()
@@ -162,11 +176,7 @@ def combine_recent_docs_to_one(base_dir: Path, day_num=7):
     output_file = base_dir / "synthe/week/synthe_week.md"
     with open(output_file, "w") as f:
         for delta_day in range(day_num - 1, -1, -1):
-            diary_path = (
-                base_dir
-                / str(datetime.date.today() - datetime.timedelta(delta_day))
-                / "diary.md"
-            )
+            diary_path = base_dir / str(datetime.date.today() - datetime.timedelta(delta_day)) / "diary.md"
             if diary_path.exists():
                 with open(diary_path, "r") as f2:
                     mkd_content = f2.read()
@@ -193,9 +203,7 @@ def synthesize_by_tag(tag: str, src_dir: Path, dst_dir: Path):
         src_dir:統合されるマークダウンを格納したディレクトリ群の親ディレクトリ
         dst_dir:生成するマークダウンの場所
     """
-    mkd_dir_paths = [
-        mkd_dir for mkd_dir in src_dir.iterdir() if mkd_dir.stem != "synthe"
-    ]
+    mkd_dir_paths = [mkd_dir for mkd_dir in src_dir.iterdir() if mkd_dir.stem != "synthe"]
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
     p = Path(dst_dir)

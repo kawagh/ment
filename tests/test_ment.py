@@ -7,7 +7,7 @@ from ment.main import (_extract_tags, extract_content_for_tag_from_mkd,
 
 
 def test_version():
-    assert __version__ == "0.2.0"
+    assert __version__ == "0.2.1"
 
 
 def test_extract_content_for_tag_from_mkd():
@@ -27,9 +27,7 @@ def test_synthesize_by_tag():
     """
     tagを指定して合成したファイルと所望のファイルの差分がないか調べる
     """
-    synthesize_by_tag(
-        "tag1", Path("tests/sample_mkd/"), Path("tests/sample_mkd/synthe/")
-    )
+    synthesize_by_tag("tag1", Path("tests/sample_mkd/"), Path("tests/sample_mkd/synthe/"))
     ret_code = subprocess.run(
         [
             "diff",

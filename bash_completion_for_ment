@@ -10,7 +10,7 @@ _ment()
 {
   local cur prev cword opts
   _get_comp_words_by_ref -n : cur prev cword
-  opts="synthe week list read"
+  opts="synthe week list read update"
   if [ "${cword}" -eq 1 ]; then
     COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
   elif [ "${prev}" = "read" ]; then
