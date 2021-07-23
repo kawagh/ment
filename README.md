@@ -51,6 +51,8 @@ It outputs `~/ment_dir/synthe/week/synthe_week.md`.
 
 To read synthesized documents,`m read <tag_name>`.
 
+To update already synthesized documents, `m update`.
+
 ### configuration
 
 If you want to change editor and directory, please set environment variable.
