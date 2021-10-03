@@ -1,6 +1,7 @@
+
 # ment
 
-## what is this?
+## What is this?
 
 `ment` is a tool to
 
@@ -9,14 +10,18 @@
 
     Synthesizing daily logs is like sorting loose-leaf notebook.
 
+![image](https://user-images.githubusercontent.com/45124565/126846109-ab4e804e-45e8-4053-a72c-12cfcffdf8d6.png)
 
-## installation
+
+
+
+## Installation
 
 ```sh
 pip install ment
 ```
 
-## usage
+## Usage
 
 ### start editting
 
@@ -45,6 +50,8 @@ To synthesize recent 7days document,`m week`.
 It outputs `~/ment_dir/synthe/week/synthe_week.md`.
 
 To read synthesized documents,`m read <tag_name>`.
+
+To update already synthesized documents, `m update`.
 
 ### configuration
 
