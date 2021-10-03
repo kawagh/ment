@@ -11,11 +11,11 @@ from typing import List
 if os.environ.get("MENT_DIR") is None:
     BASE_DIR = Path.home() / "ment_dir"
 else:
-    BASE_DIR = Path(os.environ.get("MENT_DIR"))
+    BASE_DIR = Path(os.environ.get("MENT_DIR"))  # type:ignore
 if os.environ.get("MENT_EDITOR") is None:
     MENT_EDITOR = "vim"
 else:
-    MENT_EDITOR = os.environ.get("MENT_EDITOR")
+    MENT_EDITOR = os.environ.get("MENT_EDITOR")  # type:ignore
 
 
 def get_args():
@@ -128,9 +128,10 @@ def list_tags(src_dir):
         diary_path = src_mkd_dir / "diary.md"
         if diary_path.exists():
             tags = _extract_tags(diary_path)
-            print(f"\033[32m{src_mkd_dir}\33[0m", tags)
+            print(f"\033[32m{src_mkd_dir.stem}\33[0m")
+            print(*tags, sep="\n")
             tag_cnt += Counter(tags)
-    print(tag_cnt)
+    # print(tag_cnt)
 
 
 def extract_content_for_tag_from_mkd(mkd_path: Path, query_tag: str) -> List[str]:
