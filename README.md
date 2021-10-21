@@ -69,13 +69,13 @@ Default,MENT_DIR is `~/ment_dir/`
 ```text
 ~/ment_dir/
 ├── 2021-03-27
-│   └── diary.md
+│   └── 2021-03-27.md
 ├── 2021-03-28
-│   └── diary.md
+│   └── 2021-03-28.md
 ├── 2021-03-29
-│   └── diary.md
+│   └── 2021-03-29.md
 ├── 2021-03-30
-│   └── diary.md
+│   └── 2021-03-30.md
 └── synthe
     ├── tag1
     │   └── synthe_tag1.md

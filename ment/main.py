@@ -125,7 +125,11 @@ def list_tags(src_dir):
     tag_cnt = Counter()
     mkd_dir_paths.sort()
     for src_mkd_dir in mkd_dir_paths:
-        diary_path = src_mkd_dir / "diary.md"
+        file_name = src_mkd_dir.name + ".md"
+        diary_path = src_mkd_dir / file_name
+        if not diary_path.exists():
+            diary_path = src_mkd_dir / "diary.md"
+
         if diary_path.exists():
             tags = _extract_tags(diary_path)
             print(f"\033[32m{src_mkd_dir.stem}\33[0m")
@@ -177,7 +181,10 @@ def combine_recent_docs_to_one(base_dir: Path, day_num=7):
     output_file = base_dir / "synthe/week/synthe_week.md"
     with open(output_file, "w") as f:
         for delta_day in range(day_num - 1, -1, -1):
-            diary_path = base_dir / str(datetime.date.today() - datetime.timedelta(delta_day)) / "diary.md"
+            date = str(datetime.date.today() - datetime.timedelta(delta_day))
+            diary_path = base_dir / date / f"{date}.md"
+            if not diary_path.exists():
+                diary_path = base_dir / date / "diary.md"
             if diary_path.exists():
                 with open(diary_path, "r") as f2:
                     mkd_content = f2.read()
@@ -213,7 +220,9 @@ def synthesize_by_tag(tag: str, src_dir: Path, dst_dir: Path):
     print(f"Extracting tag `{tag}` from")
     with open(output_file, "w") as f:
         for src_mkd_dir in mkd_dir_paths:
-            diary_path = Path(src_mkd_dir) / "diary.md"
+            diary_path = Path(src_mkd_dir) / "f{src_mkd_dir.name}.md"
+            if not diary_path.exists():
+                diary_path = Path(src_mkd_dir) / "diary.md"
             if diary_path.exists():
                 header = make_header(diary_path)
                 clines = extract_content_for_tag_from_mkd(diary_path, tag)
@@ -242,8 +251,7 @@ def main():
 
     YYYY_MM_DD = str(datetime.date.today())
 
-    title = "diary"
-    file_name = title + ".md"
+    file_name = YYYY_MM_DD + ".md"
     Path(BASE_DIR / YYYY_MM_DD).mkdir(exist_ok=True)
     file_path = BASE_DIR / YYYY_MM_DD / file_name
 

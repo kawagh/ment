@@ -7,7 +7,7 @@ from ment.main import (_extract_tags, extract_content_for_tag_from_mkd,
 
 
 def test_version():
-    assert __version__ == "0.2.2"
+    assert __version__ == "0.2.3"
 
 
 def test_extract_content_for_tag_from_mkd():
