@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import datetime
 import os
@@ -167,7 +169,7 @@ def extract_content_for_tag_from_mkd(mkd_path: Path, query_tag: str) -> List[str
     return contents_lines
 
 
-def make_header(diary_path: Path) -> List[str]:
+def make_header(diary_path: Path) -> list[str]:
     header = [
         "# " + diary_path.parent.name + "\n\n",
     ]  # 抽出元ファイル
@@ -211,7 +213,7 @@ def synthesize_by_tag(tag: str, src_dir: Path, dst_dir: Path):
         src_dir:統合されるマークダウンを格納したディレクトリ群の親ディレクトリ
         dst_dir:生成するマークダウンの場所
     """
-    mkd_dir_paths = [mkd_dir for mkd_dir in src_dir.iterdir() if mkd_dir.stem != "synthe"]
+    mkd_dir_paths: list[Path] = [mkd_dir for mkd_dir in src_dir.iterdir() if mkd_dir.stem != "synthe"]
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
     p = Path(dst_dir)
