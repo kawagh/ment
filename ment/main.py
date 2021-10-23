@@ -223,6 +223,7 @@ def synthesize_by_tag(tag: str, src_dir: Path, dst_dir: Path):
     with open(output_file, "w") as f:
         for src_mkd_dir in mkd_dir_paths:
             diary_path = Path(src_mkd_dir) / f"{src_mkd_dir.name}.md"
+
             if not diary_path.exists():
                 diary_path = Path(src_mkd_dir) / "diary.md"
             if diary_path.exists():
