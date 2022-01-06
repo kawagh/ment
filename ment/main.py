@@ -9,15 +9,17 @@ from collections import Counter
 from pathlib import Path
 from typing import List
 
-# config
-if os.environ.get("MENT_DIR") is None:
-    BASE_DIR = Path.home() / "ment_dir"
-else:
-    BASE_DIR = Path(os.environ.get("MENT_DIR"))  # type:ignore
-if os.environ.get("MENT_EDITOR") is None:
-    MENT_EDITOR = "vim"
-else:
-    MENT_EDITOR = os.environ.get("MENT_EDITOR")  # type:ignore
+
+class CFG:
+    def __init__(self):
+        if os.environ.get("MENT_DIR"):
+            self.BASE_DIR = Path(os.environ.get("MENT_DIR"))  # type:ignore
+        else:
+            self.BASE_DIR: Path = Path.home() / "ment_dir"
+        if os.environ.get("MENT_EDITOR"):
+            self.MENT_EDITOR = os.environ.get("MENT_EDITOR")  # type:ignore
+        else:
+            self.MENT_EDITOR: str = "vim"
 
 
 def get_args():
@@ -55,12 +57,13 @@ def get_args():
     return args
 
 
-def command_list(args):
-    list_tags(BASE_DIR)
+def command_list(_):
+    cfg = CFG()
+    list_tags(cfg.BASE_DIR)
     exit()
 
 
-def command_update(args):
+def command_update(_):
     """
     合成ファイルの一括更新
     ```
@@ -68,37 +71,41 @@ def command_update(args):
     m synthe {any tag}
     ```
     """
-    combine_recent_docs_to_one(BASE_DIR)
-    for dst_dir in (BASE_DIR / "synthe").iterdir():
+    cfg = CFG()
+    combine_recent_docs_to_one(cfg.BASE_DIR)
+    for dst_dir in (cfg.BASE_DIR / "synthe").iterdir():
         tag = dst_dir.stem
         # week,externalはtagとして扱えない
         if tag == "week" or tag == "external":
             continue
-        synthesize_by_tag(dst_dir.stem, BASE_DIR, dst_dir)
+        synthesize_by_tag(dst_dir.stem, cfg.BASE_DIR, dst_dir)
     exit()
 
 
 def command_synthe(args):
+    cfg = CFG()
     tag = args.tag
-    dst_dir: Path = BASE_DIR / "synthe" / tag
+    dst_dir: Path = cfg.BASE_DIR / "synthe" / tag
     dst_dir.mkdir(parents=True, exist_ok=True)
     # tag search
-    synthesize_by_tag(tag, BASE_DIR, dst_dir)
+    synthesize_by_tag(tag, cfg.BASE_DIR, dst_dir)
     exit()
 
 
 def command_read(args):
+    cfg = CFG()
     tag = args.tag
-    read_file_path = Path(BASE_DIR) / "synthe" / tag / f"synthe_{tag}.md"
+    read_file_path = Path(cfg.BASE_DIR) / "synthe" / tag / f"synthe_{tag}.md"
     if not read_file_path.exists():
         raise FileNotFoundError(f"Please run `m synthe {tag}` or `m week` before read command")
     else:
-        subprocess.run([MENT_EDITOR, read_file_path])
+        subprocess.run([cfg.MENT_EDITOR, read_file_path])
         exit()
 
 
-def command_week(args):
-    combine_recent_docs_to_one(BASE_DIR)
+def command_week(_):
+    cfg = CFG()
+    combine_recent_docs_to_one(cfg.BASE_DIR)
     exit()
 
 
@@ -213,13 +220,15 @@ def synthesize_by_tag(tag: str, src_dir: Path, dst_dir: Path):
         src_dir:統合されるマークダウンを格納したディレクトリ群の親ディレクトリ
         dst_dir:生成するマークダウンの場所
     """
+
     mkd_dir_paths: list[Path] = [mkd_dir for mkd_dir in src_dir.iterdir() if mkd_dir.stem != "synthe"]
     # 時系列順に眺めていきたい
     mkd_dir_paths.sort()
-    p = Path(dst_dir)
-    output_file = p / f"synthe_{tag}.md"
+    dst_dir.mkdir(parents=True, exist_ok=True)
+    output_file = dst_dir / f"synthe_{tag}.md"
 
-    print(f"Extracting tag `{tag}` from")
+    print(f"Started Extracting tag `{tag}` from ...")
+    has_content = False
     with open(output_file, "w") as f:
         for src_mkd_dir in mkd_dir_paths:
             diary_path = Path(src_mkd_dir) / f"{src_mkd_dir.name}.md"
@@ -230,35 +239,41 @@ def synthesize_by_tag(tag: str, src_dir: Path, dst_dir: Path):
                 header = make_header(diary_path)
                 clines = extract_content_for_tag_from_mkd(diary_path, tag)
                 if len(clines) != 0:
+                    has_content = True
                     print(diary_path)
                     f.writelines(header)
                     f.writelines(clines)
                     f.write("\n")
-    print("Extracted.")
-    print()
-    print(f"output to  {output_file}")
-    print(
-        f"To access to the file, \
-`m read {tag}`"
-    )
-    return "a"
+    if not has_content:
+        output_file.unlink()
+        dst_dir.rmdir()
+        print("contents tagged `{tag}` not found")
+    else:
+        print("Extracted.")
+        print()
+        print(f"output to  {output_file}")
+        print(
+            f"To access to the file, \
+    `m read {tag}`"
+        )
 
 
 def main():
     """main."""
     args = get_args()
+    cfg = CFG()
     if hasattr(args, "handler"):
         args.handler(args)
     print("This is ment")
-    Path(BASE_DIR / "synthe/week").mkdir(exist_ok=True, parents=True)
+    Path(cfg.BASE_DIR / "synthe/week").mkdir(exist_ok=True, parents=True)
 
     YYYY_MM_DD = str(datetime.date.today())
 
     file_name = YYYY_MM_DD + ".md"
-    Path(BASE_DIR / YYYY_MM_DD).mkdir(exist_ok=True)
-    file_path = BASE_DIR / YYYY_MM_DD / file_name
+    Path(cfg.BASE_DIR / YYYY_MM_DD).mkdir(exist_ok=True)
+    file_path = cfg.BASE_DIR / YYYY_MM_DD / file_name
 
-    subprocess.run([MENT_EDITOR, file_path])
+    subprocess.run([cfg.MENT_EDITOR, file_path])
 
 
 if __name__ == "__main__":

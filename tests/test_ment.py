@@ -27,16 +27,21 @@ def test_synthesize_by_tag():
     """
     tagを指定して合成したファイルと所望のファイルの差分がないか調べる
     """
-    synthesize_by_tag("tag1", Path("tests/sample_mkd/"), Path("tests/sample_mkd/synthe/"))
+    synthesize_by_tag("tag1", Path("tests/sample_mkd/"), Path("tests/sample_mkd/synthe/tag1"))
     ret_code = subprocess.run(
         [
             "diff",
             "-s",
-            "tests/sample_mkd/synthe/synthe_tag1.md",
+            "tests/sample_mkd/synthe/tag1/synthe_tag1.md",
             "tests/sample_mkd/target_synthe/synthe_tag1.md",
         ]
     ).returncode
     assert ret_code == 0
+
+
+def test_synthesize_by_not_exist_tag():
+    synthesize_by_tag("no_tag", Path("tests/sample_mkd/"), Path("tests/sample_mkd/synthe/no_tag"))
+    assert not Path("tests/sample_mkd/synthe/no_tag").exists(), "合成元の無いディレクトリが残っている"
 
 
 def test__extract_tags():
