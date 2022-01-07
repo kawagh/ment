@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ment"
-version = "0.2.4"
+version = "0.2.5"
 description = "python library to write daily log in markdown quickly and to synthesize daily logs based on category"
 authors = ["kawagh"]
 repository="https://github.com/kawagh/ment"
